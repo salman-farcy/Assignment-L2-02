@@ -1,5 +1,5 @@
 import { pool } from "../../db/schema";
-import { isValidDescription, isValidTitle, isValidType } from "../../utils/validation";
+import { isValidDescription, isValidStatus, isValidTitle, isValidType } from "../../utils/validation";
 import type { CreateIssueRequest } from "./issues.interface";
 
 
@@ -50,9 +50,70 @@ const createIssueServiceDB = async (
 
 
 // get all issues in db
-const getAllIssuesServiceDB = async () => {
+const getAllIssuesServiceDB = async (
+  sort: 'newest' | 'oldest' = 'newest',
+  type?: 'bug' | 'feature_request',
+  status?: 'open' | 'in_progress' | 'resolved'
+) => {
+
+  try {
+    let query = 'SELECT * FROM issues WHERE 1=1';
+    const params: unknown[] = [];
+    let paramIndex = 1;
+
+    // Apply type filter
+    if (type && isValidType(type)) {
+      query += ` AND type = $${paramIndex}`;
+      params.push(type);
+      paramIndex++;
+    }
+
+    // Apply status filter
+    if (status && isValidStatus(status)) {
+      query += ` AND status = $${paramIndex}`;
+      params.push(status);
+      paramIndex++;
+    }
+
+    // Apply sorting
+    query += sort === 'oldest' ? ' ORDER BY created_at ASC' : ' ORDER BY created_at DESC';
+
+    const result = await pool.query(query, params);
+    const issues = result.rows;
+
+    // Fetch reporter details for each issue (no JOINs allowed)
+    const issuesWithReporters = await Promise.all(
+      issues.map(async (issue) => {
+        const reporterResult = await pool.query('SELECT id, name, role FROM users WHERE id = $1', [
+          issue.reporter_id,
+        ]);
+
+        const reporter = reporterResult.rows[0];
+
+        return {
+          id: issue.id,
+          title: issue.title,
+          description: issue.description,
+          type: issue.type,
+          status: issue.status,
+          reporter: reporter ? { id: reporter.id, name: reporter.name, role: reporter.role } : undefined,
+          created_at: issue.created_at,
+          updated_at: issue.updated_at,
+        };
+      })
+    );
+
+    return issuesWithReporters;
+  } catch (error) {
+    console.error('Get all issues error:', error);
+    throw error;
+  }
 
 }
+
+
+
+
 
 
 

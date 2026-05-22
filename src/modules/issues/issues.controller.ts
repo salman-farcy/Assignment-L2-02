@@ -40,24 +40,26 @@ const createIssue = async (req: Request, res: Response) => {
 
 const getAllIssues = async (req: Request, res: Response) => {
      try {
-          console.log("query" ,req.query.sort)
-          // const sortParam = typeof req.query.sort === 'string' ? req.query.sort : undefined;
-          // const sort = sortParam?.toLowerCase() === 'oldest' ? 'oldest' : 'newest';
+          const sortParam = typeof req.query.sort === 'string' ? req.query.sort : undefined;
+          const sort = sortParam?.toLowerCase() === 'oldest' ? 'oldest' : 'newest';
 
-          // const typeParam = typeof req.query.type === 'string' ? req.query.type : undefined;
-          // const type = typeParam as 'bug' | 'feature_request' | undefined;
+          const typeParam = typeof req.query.type === 'string' ? req.query.type : undefined;
+          const type = typeParam as 'bug' | 'feature_request' | undefined;
 
-          // const statusParam = typeof req.query.status === 'string' ? req.query.status : undefined;
-          // const status = statusParam as 'open' | 'in_progress' | 'resolved' | undefined;
+          const statusParam = typeof req.query.status === 'string' ? req.query.status : undefined;
+          const status = statusParam as 'open' | 'in_progress' | 'resolved' | undefined;
 
-          // const issues = await getAllIssuesService(sort, type, status);
+          const issues = await issuesServices.getAllIssuesServiceDB(sort, type, status);
 
-          // sendSuccess(res, 200, 'Issues retrieved successfully', issues);
+          sendSuccess(res, 200, 'Issues retrieved successfully', issues);
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Get all issues failed';
           sendError(res, 500, 'Internal server error', errorMessage);
      }
 }
+
+
+const 
 
 
 export const issuesController = {

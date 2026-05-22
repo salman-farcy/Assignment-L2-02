@@ -13,7 +13,11 @@ router.post('/',authMiddleware, issuesController.createIssue);
 
 //GET  /api/issues
 // Get all issues (public)
-router.post('/', issuesController.getAllIssues)
+router.get('/', issuesController.getAllIssues);
+
+
+
+router.get('/', )
 
 
 export const issuesRouter = router;
