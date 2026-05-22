@@ -40,10 +40,9 @@ export const initializeDatabase = async () => {
                          updated_at TIMESTAMP DEFAULT NOW()
                     )
                `);
-
                console.log("✅ Database tables created successfully");
           }
-
+          console.log("✅ Database Connected Successfully");
      } catch (error) {
           console.error('❌ Database initialization error', error)
      }

@@ -1,6 +1,8 @@
 import express, { type Request, type Response } from "express"
 import CookieParser from "cookie-parser";
 import cors from "cors"
+import { authRoute } from "./modules/auth/auth.routes";
+import { errorHandler, notFoundHandler } from "./middleware/error";
 
 const app = express();
 
@@ -19,8 +21,11 @@ app.get('/', (req : Request, res : Response) => {
 });
 
 
+app.use('/api/auth', authRoute);
 
 
+app.use(notFoundHandler)
 
+app.use(errorHandler)
 
 export default app;
