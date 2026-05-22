@@ -10,7 +10,8 @@ dotenv.config({
 const config = {
      connection_string: process.env.CONNECTIONDB ,
      port: process.env.PORT || 3000,
-     
+     secret: process.env.JWT_SECRET,
+     expiry: process.env.JWT_EXPIRY
 }
 
 

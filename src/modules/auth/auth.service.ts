@@ -1,7 +1,8 @@
 import { pool } from "../../db/schema";
-import { hashPassword } from "../../utils/bcrypt";
+import { comparePassword, hashPassword } from "../../utils/bcrypt";
+import { generateToken, type JWTPayload } from "../../utils/jwt";
 import { isValidRole } from "../../utils/validation";
-import type { SignupRequest } from "./auth.interface"
+import type { LoginRequest, SignupRequest } from "./auth.interface"
 
 
 const signUpServiceIntoDB = async (data: SignupRequest) => {
@@ -61,9 +62,66 @@ const signUpServiceIntoDB = async (data: SignupRequest) => {
 }
 
 
+const loginUserServiceIntoDB = async (data: LoginRequest) => {
+     // input validate
+     if (!data.email) {
+          throw new Error('ValidationError: Valid email is required');
+     }
 
+     if (!data.password) {
+          throw new Error('ValidationError: Password is required');
+     }
+
+     try {
+          // Find user by email
+          const result = await pool.query(`
+               SELECT * FROM users 
+               WHERE email = $1
+          `, [data.email]);
+
+
+          if (result.rows.length === 0) {
+               throw new Error('ValidationError: Invalid email or password');
+          }
+
+          const user = result.rows[0];
+
+          // Compare passwords
+          const isPasswordValid = await comparePassword(data.password, user.password);
+
+          if (!isPasswordValid) {
+               throw new Error('ValidationError: Invalid email or password');
+          }
+
+          //Generate JWT token
+          const payload: JWTPayload = {
+               id: user.id,
+               name: user.name,
+               role: user.role,
+          };
+
+          const token = generateToken(payload);
+
+          return {
+               token,
+               user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    created_at: user.created_at,
+                    updated_at: user.updated_at,
+               }
+          }
+
+
+     } catch (error) {
+          throw error
+     }
+}
 
 
 export const authService = {
      signUpServiceIntoDB,
+     loginUserServiceIntoDB
 }
