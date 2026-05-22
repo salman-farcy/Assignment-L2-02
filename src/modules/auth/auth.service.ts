@@ -1,6 +1,6 @@
 import { pool } from "../../db/schema";
 import { comparePassword, hashPassword } from "../../utils/bcrypt";
-import { generateToken, type JWTPayload } from "../../utils/jwt";
+import { generateAccessToken,  generateRefreshToken,  type JWTPayload } from "../../utils/jwt";
 import { isValidRole } from "../../utils/validation";
 import type { LoginRequest, SignupRequest } from "./auth.interface"
 
@@ -46,7 +46,6 @@ const signUpServiceIntoDB = async (data: SignupRequest) => {
           `, [data.name, data.email, hashedPassword, role]);
 
           const user = result.rows[0];
-          console.log(user)
           return {
                id: user.id,
                name: user.name,
@@ -79,20 +78,17 @@ const loginUserServiceIntoDB = async (data: LoginRequest) => {
                WHERE email = $1
           `, [data.email]);
 
-
           if (result.rows.length === 0) {
                throw new Error('ValidationError: Invalid email or password');
           }
 
           const user = result.rows[0];
 
-          // Compare passwords
+          // Compare passwords bcrypt
           const isPasswordValid = await comparePassword(data.password, user.password);
-
           if (!isPasswordValid) {
                throw new Error('ValidationError: Invalid email or password');
           }
-
           //Generate JWT token
           const payload: JWTPayload = {
                id: user.id,
@@ -100,10 +96,14 @@ const loginUserServiceIntoDB = async (data: LoginRequest) => {
                role: user.role,
           };
 
-          const token = generateToken(payload);
+          // Generate accessToken
+          const accessToken = generateAccessToken(payload);
 
+          // Generate refreshToken
+          const refreshToken = generateRefreshToken(payload);
           return {
-               token,
+               accessToken,
+               refreshToken,
                user: {
                     id: user.id,
                     name: user.name,
@@ -113,8 +113,6 @@ const loginUserServiceIntoDB = async (data: LoginRequest) => {
                     updated_at: user.updated_at,
                }
           }
-
-
      } catch (error) {
           throw error
      }

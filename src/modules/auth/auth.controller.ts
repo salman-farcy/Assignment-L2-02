@@ -34,6 +34,13 @@ const login = async (req: Request, res: Response) => {
                password,
           });
 
+          const { accessToken, refreshToken, user} = response;
+          res.cookie("refreshToken", refreshToken, {
+               secure: false,
+               httpOnly: true, 
+               sameSite: 'lax'
+          })
+
           sendSuccess(res, 200, 'Login successful', response);
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Login failed';

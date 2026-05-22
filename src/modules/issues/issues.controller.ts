@@ -1,0 +1,66 @@
+import type { Request, Response } from "express";
+import { sendError, sendSuccess } from "../../utils/response";
+import type { CreateIssueRequest } from "./issues.interface";
+import { issuesServices } from "./issues.service";
+
+
+
+
+const createIssue = async (req: Request, res: Response) => {
+     try {
+          if (!req.user) {
+               sendError(res, 401, 'Authentication required');
+               return;
+          }
+
+          const { title, description, type } = req.body as CreateIssueRequest;
+
+          const issue = await issuesServices.createIssueServiceDB(
+               {
+                    title,
+                    description,
+                    type,
+               },
+               req.user.id
+          );
+
+          sendSuccess(res, 201, 'Issue created successfully', issue);
+     } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Create issue failed';
+
+          if (errorMessage.includes('ValidationError')) {
+               const message = errorMessage.replace('ValidationError: ', '');
+               sendError(res, 400, message);
+          } else {
+               sendError(res, 500, 'Internal server error', errorMessage);
+          }
+     }
+};
+
+
+const getAllIssues = async (req: Request, res: Response) => {
+     try {
+          console.log("query" ,req.query.sort)
+          // const sortParam = typeof req.query.sort === 'string' ? req.query.sort : undefined;
+          // const sort = sortParam?.toLowerCase() === 'oldest' ? 'oldest' : 'newest';
+
+          // const typeParam = typeof req.query.type === 'string' ? req.query.type : undefined;
+          // const type = typeParam as 'bug' | 'feature_request' | undefined;
+
+          // const statusParam = typeof req.query.status === 'string' ? req.query.status : undefined;
+          // const status = statusParam as 'open' | 'in_progress' | 'resolved' | undefined;
+
+          // const issues = await getAllIssuesService(sort, type, status);
+
+          // sendSuccess(res, 200, 'Issues retrieved successfully', issues);
+     } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Get all issues failed';
+          sendError(res, 500, 'Internal server error', errorMessage);
+     }
+}
+
+
+export const issuesController = {
+     createIssue,
+     getAllIssues,
+}

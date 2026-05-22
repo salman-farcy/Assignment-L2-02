@@ -8,7 +8,6 @@ export const hashPassword = async (password: string) =>  {
           return hash;
 
      } catch (error) {
-          console.error('Error hashing password:', error);
           throw new Error('Password hashing failed');
      }
 }
@@ -23,7 +22,6 @@ export const comparePassword = async (
     const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
     return isMatch;
   } catch (error) {
-    console.error('Error comparing passwords:', error);
     throw new Error('Password comparison failed');
   }
 };
