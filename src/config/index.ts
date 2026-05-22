@@ -2,7 +2,8 @@ import dotenv from "dotenv";
 import path from "path";
 
 dotenv.config({
-     path: path.join(process.cwd(), ".env")
+     path: path.join(process.cwd(), ".env"),
+     override: true
 });
 
 
