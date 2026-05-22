@@ -84,8 +84,54 @@ const getIssueUsingById = async (req: Request, res: Response) => {
 }
 
 
+const updateIssue = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      sendError(res, 401, 'Authentication required');
+      return;
+    }
+
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const issueId = parseInt(idParam as string, 10);
+
+    if (isNaN(issueId)) {
+      sendError(res, 400, 'Invalid issue ID');
+      return;
+    }
+
+    const { title, description, type, status } = req.body;
+
+    const updatedIssue = await issuesServices.updateIssueServiceDB(
+      issueId,
+      { title, description, type, status },
+      req.user.id,
+      req.user.role
+    );
+
+    sendSuccess(res, 200, 'Issue updated successfully', updatedIssue);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Update issue failed';
+
+    if (errorMessage.includes('ValidationError')) {
+      const message = errorMessage.replace('ValidationError: ', '');
+      sendError(res, 400, message);
+    } else if (errorMessage.includes('NotFoundError')) {
+      sendError(res, 404, 'Issue not found');
+    } else if (errorMessage.includes('Forbidden')) {
+      sendError(res, 403, errorMessage);
+    } else if (errorMessage.includes('ConflictError')) {
+      const message = errorMessage.replace('ConflictError: ', '');
+      sendError(res, 409, message);
+    } else {
+      sendError(res, 500, 'Internal server error', errorMessage);
+    }
+  }
+};
+
+
 export const issuesController = {
      createIssue,
      getAllIssues,
-     getIssueUsingById
+     getIssueUsingById,
+     updateIssue
 }

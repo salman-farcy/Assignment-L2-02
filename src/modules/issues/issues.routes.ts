@@ -18,7 +18,12 @@ router.get('/', issuesController.getAllIssues);
 
 // GET /api/issues/:id
 // Get a single issue by ID (public)
-router.get('/:id',  issuesController.getIssueUsingById)
+router.get('/:id',  issuesController.getIssueUsingById);
+
+
+// PATCH /api/issues/:id
+// Update an issue (authenticated users)
+router.patch('/:id', authMiddleware, issuesController.updateIssue);
 
 
 export const issuesRouter = router;
