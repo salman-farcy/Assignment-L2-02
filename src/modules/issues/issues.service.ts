@@ -113,12 +113,44 @@ const getAllIssuesServiceDB = async (
 
 
 
+// Get a single issue by ID
+const getIssueByIdServiceDB = async (issueId: number) => {
+  try {
+    const result = await pool.query('SELECT * FROM issues WHERE id = $1', [issueId]);
 
+    if (result.rows.length === 0) {
+      throw new Error('NotFoundError: Issue not found');
+    }
+
+    const issue = result.rows[0];
+
+    // Fetch reporter details
+    const reporterResult = await pool.query('SELECT id, name, role FROM users WHERE id = $1', [
+      issue.reporter_id,
+    ]);
+
+    const reporter = reporterResult.rows[0];
+
+    return {
+      id: issue.id,
+      title: issue.title,
+      description: issue.description,
+      type: issue.type,
+      status: issue.status,
+      reporter: reporter ? { id: reporter.id, name: reporter.name, role: reporter.role } : undefined,
+      created_at: issue.created_at,
+      updated_at: issue.updated_at,
+    };
+  } catch (error) {
+    throw error;
+  }
+}
 
 
 
 export const issuesServices = {
      createIssueServiceDB,
      getAllIssuesServiceDB,
+     getIssueByIdServiceDB,
 
 }

@@ -11,13 +11,14 @@ const router = Router()
 router.post('/',authMiddleware, issuesController.createIssue);
 
 
-//GET  /api/issues
+// GET  /api/issues
 // Get all issues (public)
 router.get('/', issuesController.getAllIssues);
 
 
-
-router.get('/', )
+// GET /api/issues/:id
+// Get a single issue by ID (public)
+router.get('/:id',  issuesController.getIssueUsingById)
 
 
 export const issuesRouter = router;

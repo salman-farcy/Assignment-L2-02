@@ -59,10 +59,33 @@ const getAllIssues = async (req: Request, res: Response) => {
 }
 
 
-const 
+const getIssueUsingById = async (req: Request, res: Response) => {
+     try {
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const issueId = parseInt(idParam as string, 10);
+
+    if (isNaN(issueId)) {
+      sendError(res, 400, 'Invalid issue ID');
+      return;
+    }
+
+    const issue = await issuesServices.getIssueByIdServiceDB(issueId);
+
+    sendSuccess(res, 200, 'Issue retrieved successfully', issue);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Get issue failed';
+
+    if (errorMessage.includes('NotFoundError')) {
+      sendError(res, 404, 'Issue not found');
+    } else {
+      sendError(res, 500, 'Internal server error', errorMessage);
+    }
+  }
+}
 
 
 export const issuesController = {
      createIssue,
      getAllIssues,
+     getIssueUsingById
 }
