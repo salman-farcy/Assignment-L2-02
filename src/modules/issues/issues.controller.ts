@@ -129,9 +129,46 @@ const updateIssue = async (req: Request, res: Response) => {
 };
 
 
+
+const deleteIssue = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      sendError(res, 401, 'Authentication required');
+      return;
+    }
+
+    if (req.user.role !== 'maintainer') {
+      sendError(res, 403, 'Insufficient permissions. Maintainer role required.');
+      return;
+    }
+
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const issueId = parseInt(idParam as string, 10);
+
+    if (isNaN(issueId)) {
+      sendError(res, 400, 'Invalid issue ID');
+      return;
+    }
+
+    await issuesServices.deleteIssueServiceDB(issueId);
+
+    sendSuccess(res, 200, 'Issue deleted successfully');
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Delete issue failed';
+
+    if (errorMessage.includes('NotFoundError')) {
+      sendError(res, 404, 'Issue not found');
+    } else {
+      sendError(res, 500, 'Internal server error', errorMessage);
+    }
+  }
+};
+
+
 export const issuesController = {
      createIssue,
      getAllIssues,
      getIssueUsingById,
-     updateIssue
+     updateIssue,
+     deleteIssue,
 }

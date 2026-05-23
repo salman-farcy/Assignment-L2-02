@@ -260,10 +260,29 @@ const updateIssueServiceDB = async (
       updated_at: updatedIssue.updated_at,
     };
   } catch (error) {
-    console.error('Update issue error:', error);
     throw error;
   }
 
+}
+
+
+
+// Delete an issue
+// Only maintainers can delete issues
+const deleteIssueServiceDB = async (issueId: number) => {
+  try {
+    // Check if issue exists
+    const issueResult = await pool.query('SELECT id FROM issues WHERE id = $1', [issueId]);
+
+    if (issueResult.rows.length === 0) {
+      throw new Error('NotFoundError: Issue not found');
+    }
+
+    // Delete the issue
+    await pool.query('DELETE FROM issues WHERE id = $1', [issueId]);
+  } catch (error) {
+    throw error;
+  }
 }
 
 
@@ -273,5 +292,5 @@ export const issuesServices = {
      getAllIssuesServiceDB,
      getIssueByIdServiceDB,
      updateIssueServiceDB,
-
+     deleteIssueServiceDB,
 }

@@ -26,4 +26,9 @@ router.get('/:id',  issuesController.getIssueUsingById);
 router.patch('/:id', authMiddleware, issuesController.updateIssue);
 
 
+// DELETE /api/issues/:id
+// Delete an issue (maintainers only)
+router.delete('/:id', authMiddleware, issuesController.deleteIssue);
+
+
 export const issuesRouter = router;
