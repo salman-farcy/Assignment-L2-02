@@ -10,7 +10,7 @@ const router = Router()
 // Create a new issue (authenticated users)
 router.post('/',authMiddleware, issuesController.createIssue);
 
-
+    
 // GET  /api/issues
 // Get all issues (public)
 router.get('/', issuesController.getAllIssues);
