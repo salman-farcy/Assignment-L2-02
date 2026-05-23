@@ -6,6 +6,14 @@
 
 #### DevPulse মূলত একটি backend-focused REST API project যেটি তৈরি করা হয়েছে modern industry-standard architecture follow করে।
 
+
+
+#### 🔗 [GitHub Rep Link](https://github.com/salman-farcy/Assignment-L2-02)
+
+
+#### 🔗 [Live Project Link](https://assignment-l2-02.vercel.app/)
+
+
 ---
 
 ## ✨ এই project-এ যা যা implement করা হয়েছে
@@ -25,6 +33,7 @@
 এই project-এ সম্পূর্ণ Modular Architecture follow করা হয়েছে যাতে project scalable, maintainable এবং reusable হয়।
 
 ---
+
 
 # 📦 modules/
 
