@@ -1,5 +1,5 @@
 import type { Request, Response } from "express"
-import type { LoginRequest, SignupRequest } from "./auth.interface"
+import type { LoginRequest  } from "./auth.interface"
 import { authService } from "./auth.service";
 import { sendError, sendSuccess } from "../../utils/response";
 
@@ -34,7 +34,7 @@ const login = async (req: Request, res: Response) => {
                password,
           });
 
-          const { accessToken, refreshToken, user} = response;
+          const { refreshToken } = response;
           res.cookie("refreshToken", refreshToken, {
                secure: false,
                httpOnly: true, 
@@ -60,5 +60,4 @@ const login = async (req: Request, res: Response) => {
 export const authController = {
      signUp,
      login
-
 }

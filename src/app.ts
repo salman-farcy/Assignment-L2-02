@@ -21,9 +21,10 @@ app.get('/', (req : Request, res : Response) => {
   res.send('Hello World!');
 });
 
-
+//user api
 app.use('/api/auth', authRoute);
 
+//issues api
 app.use('/api/issues', issuesRouter);
 
 

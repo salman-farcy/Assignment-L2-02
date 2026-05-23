@@ -8,7 +8,7 @@ const router = Router()
 router.post('/signup', authController.signUp);
 
 
-// 
+// login a new existing user
 router.post('/login', authController.login)
 
 

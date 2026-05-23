@@ -105,7 +105,6 @@ const getAllIssuesServiceDB = async (
 
     return issuesWithReporters;
   } catch (error) {
-    console.error('Get all issues error:', error);
     throw error;
   }
 
